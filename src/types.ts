@@ -450,6 +450,7 @@ export interface TaskInfo {
 	complete_instances?: string[]; // Array of dates (YYYY-MM-DD) when recurring task was completed
 	skipped_instances?: string[]; // Array of dates (YYYY-MM-DD) when recurring task was skipped
 	completedDate?: string; // Date (YYYY-MM-DD) when task was marked as done
+	startedDate?: string; // Date (YYYY-MM-DD) when task first moved to an active status
 	timeEstimate?: number; // Estimated time in minutes
 	timeEntries?: TimeEntry[]; // Individual time tracking sessions
 	totalTrackedTime?: number; // Total tracked time in minutes (calculated from timeEntries)
@@ -664,6 +665,7 @@ export interface FieldMapping {
 	projects: string;
 	timeEstimate: string;
 	completedDate: string;
+	startedDate: string;
 	dateCreated: string;
 	dateModified: string;
 	recurrence: string; // RFC 5545 recurrence rule string

@@ -78,6 +78,10 @@ export function mapTaskFromFrontmatter(
 		mapped.completedDate = frontmatter[mapping.completedDate];
 	}
 
+	if (frontmatter[mapping.startedDate] !== undefined) {
+		mapped.startedDate = frontmatter[mapping.startedDate];
+	}
+
 	if (frontmatter[mapping.recurrence] !== undefined) {
 		mapped.recurrence = frontmatter[mapping.recurrence];
 	}
@@ -205,6 +209,10 @@ export function mapTaskToFrontmatter(
 
 	if (taskData.completedDate !== undefined) {
 		frontmatter[mapping.completedDate] = taskData.completedDate;
+	}
+
+	if (taskData.startedDate !== undefined) {
+		frontmatter[mapping.startedDate] = taskData.startedDate;
 	}
 
 	if (taskData.recurrence !== undefined) {

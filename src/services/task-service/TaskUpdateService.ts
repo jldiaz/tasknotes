@@ -21,6 +21,12 @@ export interface TaskUpdateServiceDependencies {
 		newStatus: string,
 		isRecurring: boolean
 	): void;
+	updateStartedDateInFrontmatter(
+		frontmatter: Record<string, unknown>,
+		currentStartedDate: string | undefined,
+		newStatus: string,
+		isRecurring: boolean
+	): void;
 }
 
 export class TaskUpdateService {
@@ -105,6 +111,12 @@ export class TaskUpdateService {
 						updates.status,
 						!!originalTask.recurrence
 					);
+					this.deps.updateStartedDateInFrontmatter(
+						frontmatter,
+						originalTask.startedDate,
+						updates.status,
+						!!originalTask.recurrence
+					);
 				}
 
 				if (plugin.settings.taskIdentificationMethod === "property") {
@@ -182,6 +194,16 @@ export class TaskUpdateService {
 					}
 				} else {
 					updatedTask.completedDate = undefined;
+				}
+				// Set startedDate on first transition to an active status
+				if (!originalTask.startedDate) {
+					const defaultStatus = plugin.statusManager.getStatusConfig(
+						plugin.settings.defaultTaskStatus
+					);
+					const nextStatus = plugin.statusManager.getStatusConfig(updates.status);
+					if (defaultStatus && nextStatus && !nextStatus.isCompleted && nextStatus.order > defaultStatus.order) {
+						updatedTask.startedDate = getCurrentDateString();
+					}
 				}
 			}
 

@@ -75,6 +75,8 @@ export class TaskService {
 			autoArchiveService: this.autoArchiveService,
 			updateCompletedDateInFrontmatter: (frontmatter, newStatus, isRecurring) =>
 				this.updateCompletedDateInFrontmatter(frontmatter, newStatus, isRecurring),
+			updateStartedDateInFrontmatter: (frontmatter, currentStartedDate, newStatus, isRecurring) =>
+				this.updateStartedDateInFrontmatter(frontmatter, currentStartedDate, newStatus, isRecurring),
 		});
 	}
 
@@ -499,6 +501,16 @@ export class TaskService {
 				} else {
 					updatedTask.completedDate = undefined;
 				}
+				// Set startedDate on first transition to an active status
+				if (!freshTask.startedDate) {
+					const defaultStatus = this.plugin.statusManager.getStatusConfig(
+						this.plugin.settings.defaultTaskStatus
+					);
+					const nextStatus = this.plugin.statusManager.getStatusConfig(value);
+					if (defaultStatus && nextStatus && !nextStatus.isCompleted && nextStatus.order > defaultStatus.order) {
+						updatedTask.startedDate = getCurrentDateString();
+					}
+				}
 			}
 
 			// Step 2: Persist to file
@@ -518,6 +530,9 @@ export class TaskService {
 					// Update completed date when marking as complete (non-recurring tasks only)
 					// FIX: Use freshTask instead of stale task to check recurrence
 					this.updateCompletedDateInFrontmatter(frontmatter, value, !!freshTask.recurrence);
+
+					// Update started date on first transition to active status
+					this.updateStartedDateInFrontmatter(frontmatter, freshTask.startedDate, value, !!freshTask.recurrence);
 				} else if ((property === "due" || property === "scheduled") && !value) {
 					// Remove empty due/scheduled dates
 					delete frontmatter[fieldName];
@@ -1730,6 +1745,52 @@ export class TaskService {
 				delete frontmatter[completedDateField];
 			}
 		}
+	}
+
+	/**
+	 * Determine whether startedDate should be set for a status change.
+	 * Sets it once on the first transition to an active (non-default, non-completed) status.
+	 */
+	private shouldSetStartedDate(
+		currentStartedDate: string | undefined,
+		newStatus: string,
+		isRecurring: boolean
+	): boolean {
+		if (isRecurring || currentStartedDate) return false;
+
+		const defaultStatus = this.plugin.statusManager.getStatusConfig(
+			this.plugin.settings.defaultTaskStatus
+		);
+		const nextStatus = this.plugin.statusManager.getStatusConfig(newStatus);
+
+		if (!defaultStatus || !nextStatus) return false;
+		if (nextStatus.isCompleted) return false;
+
+		return nextStatus.order > defaultStatus.order;
+	}
+
+	/**
+	 * Update the startedDate field in frontmatter based on the task's status.
+	 * Sets startedDate to current date when task first moves to an active status.
+	 * Once set, startedDate is never removed.
+	 *
+	 * @param frontmatter - The frontmatter object to modify
+	 * @param currentStartedDate - The current startedDate value (if any)
+	 * @param newStatus - The new status value
+	 * @param isRecurring - Whether the task is recurring
+	 */
+	updateStartedDateInFrontmatter(
+		frontmatter: Record<string, any>,
+		currentStartedDate: string | undefined,
+		newStatus: string,
+		isRecurring: boolean
+	): void {
+		if (!this.shouldSetStartedDate(currentStartedDate, newStatus, isRecurring)) {
+			return;
+		}
+
+		const startedDateField = this.plugin.fieldMapper.toUserField("startedDate");
+		frontmatter[startedDateField] = getCurrentDateString();
 	}
 
 	/**

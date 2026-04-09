@@ -33,6 +33,7 @@ export const DEFAULT_FIELD_MAPPING: FieldMapping = {
 	projects: "projects",
 	timeEstimate: "timeEstimate",
 	completedDate: "completedDate",
+	startedDate: "startedDate",
 	dateCreated: "dateCreated",
 	dateModified: "dateModified",
 	recurrence: "recurrence",

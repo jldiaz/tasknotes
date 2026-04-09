@@ -23,3 +23,7 @@ Example:
 ```
 
 -->
+
+## Added
+
+- Automatic `startedDate` property — records the date when a task first moves to an active status (e.g., in-progress). Set once and never removed, enabling Gantt-chart style tracking alongside `completedDate`. Configurable property name in Settings → Task Properties.

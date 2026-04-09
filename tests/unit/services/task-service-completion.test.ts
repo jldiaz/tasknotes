@@ -66,6 +66,14 @@ describe('TaskService Completion (Issue #160)', () => {
         statusManager: {
           isCompletedStatus: jest.fn(status => status === 'done'),
           getCompletedStatuses: jest.fn(() => ['done']),
+          getStatusConfig: jest.fn((value: string) => {
+            const statuses: Record<string, any> = {
+              'open': { id: 'open', value: 'open', order: 1, isCompleted: false },
+              'in-progress': { id: 'in-progress', value: 'in-progress', order: 2, isCompleted: false },
+              'done': { id: 'done', value: 'done', order: 3, isCompleted: true },
+            };
+            return statuses[value];
+          }),
         },
         fieldMapper: {
           toUserField: jest.fn(field => field),

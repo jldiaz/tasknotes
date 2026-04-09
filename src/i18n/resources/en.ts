@@ -989,6 +989,11 @@ export const en: TranslationTree = {
 					description:
 						"Timestamp when the task was marked complete. Set automatically when status changes to a completed state.",
 				},
+				startedDate: {
+					name: "Started Date",
+					description:
+						"Date when the task first moved to an active status (e.g., in-progress). Automatically set once and never removed.",
+				},
 				archiveTag: {
 					name: "Archive Tag",
 					description:

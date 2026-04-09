@@ -2633,20 +2633,22 @@ export class KanbanView extends BasesViewBase {
 						fm[sortOrderField] = sortOrderPlan.sortOrder;
 					}
 
-					// Derivative writes for status changes (completedDate + dateModified)
+					// Derivative writes for status changes (completedDate, startedDate + dateModified)
 					if (needsGroupUpdate && groupByTaskProp === "status") {
-						const task = this.taskInfoCache.get(path);
-						const isRecurring = !!(task?.recurrence);
-						this.plugin.taskService.updateCompletedDateInFrontmatter(fm, newGroupValue, isRecurring);
-						const dateModifiedField = this.plugin.fieldMapper.toUserField("dateModified");
-						fm[dateModifiedField] = getCurrentTimestamp();
-					} else if (needsSwimlaneUpdate && swimlaneTaskProp === "status") {
-						const task = this.taskInfoCache.get(path);
-						const isRecurring = !!(task?.recurrence);
-						this.plugin.taskService.updateCompletedDateInFrontmatter(fm, newSwimLaneValue!, isRecurring);
-						const dateModifiedField = this.plugin.fieldMapper.toUserField("dateModified");
-						fm[dateModifiedField] = getCurrentTimestamp();
-					}
+							const task = this.taskInfoCache.get(path);
+							const isRecurring = !!(task?.recurrence);
+							this.plugin.taskService.updateCompletedDateInFrontmatter(fm, newGroupValue, isRecurring);
+							this.plugin.taskService.updateStartedDateInFrontmatter(fm, task?.startedDate, newGroupValue, isRecurring);
+							const dateModifiedField = this.plugin.fieldMapper.toUserField("dateModified");
+							fm[dateModifiedField] = getCurrentTimestamp();
+						} else if (needsSwimlaneUpdate && swimlaneTaskProp === "status") {
+							const task = this.taskInfoCache.get(path);
+							const isRecurring = !!(task?.recurrence);
+							this.plugin.taskService.updateCompletedDateInFrontmatter(fm, newSwimLaneValue!, isRecurring);
+							this.plugin.taskService.updateStartedDateInFrontmatter(fm, task?.startedDate, newSwimLaneValue!, isRecurring);
+							const dateModifiedField = this.plugin.fieldMapper.toUserField("dateModified");
+							fm[dateModifiedField] = getCurrentTimestamp();
+						}
 				});
 
 				this.debugLog("ATOMIC-WRITE-DONE", {

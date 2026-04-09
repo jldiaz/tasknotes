@@ -68,7 +68,15 @@ describe('TaskService', () => {
     mockPlugin = PluginFactory.createMockPlugin({
       statusManager: {
         isCompletedStatus: jest.fn((status) => status === 'done'),
-        getCompletedStatuses: jest.fn(() => ['done', 'completed'])
+        getCompletedStatuses: jest.fn(() => ['done', 'completed']),
+        getStatusConfig: jest.fn((value: string) => {
+          const statuses: Record<string, any> = {
+            'open': { id: 'open', value: 'open', order: 1, isCompleted: false },
+            'in-progress': { id: 'in-progress', value: 'in-progress', order: 2, isCompleted: false },
+            'done': { id: 'done', value: 'done', order: 3, isCompleted: true },
+          };
+          return statuses[value];
+        }),
       },
       getActiveTimeSession: jest.fn(),
       cacheManager: {

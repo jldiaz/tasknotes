@@ -182,6 +182,11 @@ export function renderTaskPropertiesTab(
 		translate("settings.taskProperties.properties.completedDate.name"),
 		translate("settings.taskProperties.properties.completedDate.description"));
 
+	// Started Date Property Card
+	renderMetadataPropertyCard(container, plugin, save, translate, "startedDate",
+		translate("settings.taskProperties.properties.startedDate.name") || "Started Date",
+		translate("settings.taskProperties.properties.startedDate.description") || "Date when the task first moved to an active status (e.g., in-progress). Automatically set once and never removed.");
+
 	// Archive Tag Property Card
 	renderMetadataPropertyCard(container, plugin, save, translate, "archiveTag",
 		translate("settings.taskProperties.properties.archiveTag.name"),

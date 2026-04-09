@@ -937,18 +937,24 @@ export class TaskListView extends BasesViewBase {
 						fm[frontmatterKey] = normalizedTargetGroupKey;
 					}
 
-					// Derivative writes for status changes (completedDate + dateModified)
+					// Derivative writes for status changes (completedDate, startedDate + dateModified)
 					if (groupByTaskProp === "status" && normalizedTargetGroupKey !== null) {
-						const task = this.taskInfoCache.get(draggedPath);
-						const isRecurring = !!(task?.recurrence);
-						this.plugin.taskService.updateCompletedDateInFrontmatter(
-							fm,
-							normalizedTargetGroupKey,
-							isRecurring
-						);
-						const dateModifiedField = this.plugin.fieldMapper.toUserField("dateModified");
-						fm[dateModifiedField] = getCurrentTimestamp();
-					}
+							const task = this.taskInfoCache.get(draggedPath);
+							const isRecurring = !!(task?.recurrence);
+							this.plugin.taskService.updateCompletedDateInFrontmatter(
+								fm,
+								normalizedTargetGroupKey,
+								isRecurring
+							);
+							this.plugin.taskService.updateStartedDateInFrontmatter(
+								fm,
+								task?.startedDate,
+								normalizedTargetGroupKey,
+								isRecurring
+							);
+							const dateModifiedField = this.plugin.fieldMapper.toUserField("dateModified");
+							fm[dateModifiedField] = getCurrentTimestamp();
+						}
 				}
 				if (sortOrderPlan.sortOrder !== null) {
 					fm[sortOrderField] = sortOrderPlan.sortOrder;
